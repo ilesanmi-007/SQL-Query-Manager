@@ -174,4 +174,244 @@ For support and questions:
 ---
 
 **Built with ❤️ using Next.js and modern web technologies**
-# SQL-Query-Manager
+# SQL Query Manager
+
+A modern, full-featured web application for managing, organizing, and sharing SQL queries with advanced collaboration features.
+
+## 🚀 Overview
+
+SQL Query Manager is a comprehensive Next.js application that provides developers and data analysts with a powerful platform to store, organize, execute, and share SQL queries. Built with modern web technologies, it offers both individual productivity features and team collaboration capabilities.
+
+## ✨ Key Features
+
+### 📝 Query Management
+- **Create & Store**: Save SQL queries with names, descriptions, and metadata
+- **Version Control**: Track query versions and changes over time
+- **Rich Editor**: Syntax highlighting and code formatting for SQL
+- **Result Storage**: Save query results and screenshots for reference
+- **Favorites System**: Mark important queries for quick access
+
+### 🏷️ Organization & Discovery
+- **Tag System**: Organize queries with custom tags and categories
+- **Advanced Search**: Find queries by name, description, tags, or content
+- **Filtering**: Filter by favorites, tags, visibility, and date ranges
+- **Smart Categorization**: Automatic organization suggestions
+
+### 👥 Collaboration & Sharing
+- **Public/Private Queries**: Control query visibility and sharing
+- **Public Query Feed**: Browse and discover queries shared by the community
+- **User Profiles**: View queries by specific users
+- **Read-only Sharing**: Safe sharing without edit permissions
+
+### 🎨 User Experience
+- **Dark/Light Mode**: Toggle between themes for comfortable viewing
+- **Color Themes**: Multiple color schemes (Ocean, Forest, Sunset, Purple, Rose, etc.)
+- **Responsive Design**: Works seamlessly on desktop, tablet, and mobile
+- **Intuitive Interface**: Clean, modern UI with excellent usability
+
+### 🔐 Security & Authentication
+- **User Authentication**: Secure login system with NextAuth.js
+- **Row-Level Security**: Database-level access control
+- **Owner Permissions**: Only query owners can edit or change visibility
+- **Admin Panel**: Administrative controls for user and query management
+
+### 💾 Data Storage Options
+- **Supabase Integration**: Cloud-based PostgreSQL with real-time features
+- **Local Storage**: Client-side storage for offline usage
+- **Flexible Backend**: Adaptable storage layer supporting multiple backends
+
+## 🛠️ Technology Stack
+
+### Frontend
+- **Next.js 15** - React framework with App Router
+- **React 19** - Modern React with latest features
+- **TypeScript** - Type-safe development
+- **Tailwind CSS 4** - Utility-first styling
+- **Heroicons** - Beautiful SVG icons
+
+### Backend & Database
+- **Supabase** - PostgreSQL database with real-time subscriptions
+- **NextAuth.js** - Authentication and session management
+- **Row Level Security** - Database-level access control
+- **RESTful APIs** - Clean API design with proper HTTP methods
+
+### Development & Testing
+- **Jest** - Unit and integration testing
+- **React Testing Library** - Component testing
+- **ESLint** - Code linting and formatting
+- **TypeScript** - Static type checking
+
+## 📦 Installation & Setup
+
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
+- Supabase account (for cloud storage)
+
+### Quick Start
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/ilesanmi-007/SQL-Query-Manager.git
+   cd SQL-Query-Manager
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Environment setup**
+   ```bash
+   cp .env.local.example .env.local
+   # Edit .env.local with your configuration
+   ```
+
+4. **Database setup**
+   ```bash
+   # Run the schema in your Supabase project
+   psql -f supabase-schema.sql
+   
+   # Apply visibility migration if upgrading
+   psql -f migration-add-visibility.sql
+   ```
+
+5. **Start development server**
+   ```bash
+   npm run dev
+   ```
+
+6. **Open in browser**
+   ```
+   http://localhost:3000
+   ```
+
+## 🔧 Configuration
+
+### Environment Variables
+```env
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your-secret-key
+SUPABASE_URL=your-supabase-url
+SUPABASE_ANON_KEY=your-supabase-anon-key
+```
+
+### Database Schema
+The application uses PostgreSQL with the following main tables:
+- `users` - User accounts and profiles
+- `queries` - SQL queries with metadata
+- `tags` - Query categorization system
+
+## 🎯 Use Cases
+
+### For Individual Developers
+- Store frequently used SQL queries
+- Build a personal knowledge base of database operations
+- Track query performance and results over time
+- Organize queries by project or functionality
+
+### For Data Teams
+- Share common queries across team members
+- Collaborate on complex data analysis
+- Maintain a centralized query repository
+- Document data workflows and procedures
+
+### For Organizations
+- Create a company-wide SQL knowledge base
+- Standardize common database operations
+- Enable knowledge sharing between teams
+- Maintain query documentation and best practices
+
+## 🚦 API Endpoints
+
+### Queries
+- `GET /api/queries` - List user queries
+- `POST /api/queries` - Create new query
+- `GET /api/queries/[id]` - Get specific query
+- `PUT /api/queries/[id]` - Update query
+- `DELETE /api/queries/[id]` - Delete query
+- `PATCH /api/queries/[id]/visibility` - Toggle visibility
+
+### Public Queries
+- `GET /api/queries/public` - List all public queries
+- `GET /public` - Public queries page (no auth required)
+
+### Authentication
+- `POST /api/auth/signin` - User login
+- `POST /api/auth/signup` - User registration
+- `POST /api/auth/signout` - User logout
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run specific test file
+npm test -- visibility.test.ts
+```
+
+## 📱 Features in Detail
+
+### Query Visibility System
+- **Private Queries**: Only visible to the owner
+- **Public Queries**: Visible to all users in the public feed
+- **Owner Controls**: Toggle visibility with a single click
+- **Security**: Database-level access control ensures data privacy
+
+### Tag Management
+- Create custom tags for query organization
+- Color-coded tag system for visual organization
+- Filter queries by single or multiple tags
+- Automatic tag suggestions based on query content
+
+### Version Control
+- Track all changes to queries over time
+- Compare different versions side-by-side
+- Restore previous versions when needed
+- Maintain complete audit trail
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details on:
+- Code style and standards
+- Pull request process
+- Issue reporting
+- Development setup
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+- **Documentation**: Check the `/docs` folder for detailed guides
+- **Issues**: Report bugs via GitHub Issues
+- **Discussions**: Join community discussions in GitHub Discussions
+- **Email**: Contact the maintainers for enterprise support
+
+## 🗺️ Roadmap
+
+### Upcoming Features
+- **Query Execution**: Direct database connection and query execution
+- **Result Visualization**: Charts and graphs for query results
+- **Team Workspaces**: Shared spaces for team collaboration
+- **Query Templates**: Reusable query patterns and snippets
+- **Advanced Analytics**: Query performance tracking and optimization
+- **Export/Import**: Backup and migration tools
+- **API Integration**: REST API for external tool integration
+
+### Long-term Vision
+- **Multi-database Support**: Connect to various database types
+- **Real-time Collaboration**: Live editing and sharing
+- **AI-powered Suggestions**: Smart query completion and optimization
+- **Enterprise Features**: SSO, audit logs, and compliance tools
+
+---
+
+**Built with ❤️ by [Ilesanmi](https://github.com/ilesanmi-007)**
+
+*Transform your SQL workflow with intelligent query management and seamless collaboration.*
