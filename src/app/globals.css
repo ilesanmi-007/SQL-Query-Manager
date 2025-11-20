@@ -80,18 +80,113 @@ body {
   color: #f8fafc;
 }
 
-/* Database-inspired styling - Improved dark mode contrast */
+/* Database-inspired styling - Improved readability */
 .database-code-block {
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  border: 1px solid #e2e8f0;
-  border-left: 3px solid #64748b;
-  font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+  border: 1px solid #d1d5db;
+  border-left: 3px solid #6b7280;
+  font-family: 'Calibri', sans-serif;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .dark .database-code-block {
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
   border: 1px solid #475569;
   border-left: 3px solid #94a3b8;
+}
+
+/* Enhanced SQL syntax highlighting */
+.database-code-block pre {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #1f2937;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-weight: 500;
+}
+
+.dark .database-code-block pre {
+  color: #f1f5f9;
+  -webkit-font-smoothing: subpixel-antialiased;
+  -moz-osx-font-smoothing: auto;
+  text-shadow: 0 0 1px rgba(241, 245, 249, 0.1);
+  font-weight: 400;
+}
+
+/* Light mode improvements */
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+.dark .glass-card {
+  background: rgba(30, 41, 59, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Prism.js SQL syntax highlighting overrides */
+.database-code-block .token.keyword {
+  color: #6366f1 !important;
+  font-weight: 600;
+}
+
+.dark .database-code-block .token.keyword {
+  color: #c4b5fd !important;
+  font-weight: 600;
+  text-shadow: 0 0 1px rgba(196, 181, 253, 0.2);
+}
+
+.database-code-block .token.string {
+  color: #059669 !important;
+}
+
+.dark .database-code-block .token.string {
+  color: #6ee7b7 !important;
+  text-shadow: 0 0 1px rgba(110, 231, 183, 0.2);
+}
+
+.database-code-block .token.number {
+  color: #dc2626 !important;
+}
+
+.dark .database-code-block .token.number {
+  color: #fca5a5 !important;
+  text-shadow: 0 0 1px rgba(252, 165, 165, 0.2);
+}
+
+.database-code-block .token.operator {
+  color: #4b5563 !important;
+}
+
+.dark .database-code-block .token.operator {
+  color: #d1d5db !important;
+  text-shadow: 0 0 1px rgba(209, 213, 219, 0.1);
+}
+
+.database-code-block .token.punctuation {
+  color: #4b5563 !important;
+}
+
+.dark .database-code-block .token.punctuation {
+  color: #d1d5db !important;
+  text-shadow: 0 0 1px rgba(209, 213, 219, 0.1);
+}
+
+.database-code-block .token.function {
+  color: #2563eb !important;
+}
+
+.dark .database-code-block .token.function {
+  color: #93c5fd !important;
+  text-shadow: 0 0 1px rgba(147, 197, 253, 0.2);
 }
 
 /* Custom component classes */

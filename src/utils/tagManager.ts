@@ -254,7 +254,7 @@ export class TagManager {
       if (parsed.categories && Array.isArray(parsed.categories)) {
         this.saveCategories(parsed.categories);
       }
-    } catch (error) {
+    } catch {
       throw new Error('Invalid import data format');
     }
   }

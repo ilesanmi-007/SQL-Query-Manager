@@ -1,8 +1,57 @@
 // Export and Import functionality for SQL queries
+
+interface QueryVersion {
+  version: number;
+  name: string;
+  sql: string;
+  description: string;
+  result: string;
+  resultImage?: string;
+  editedAt: string;
+  editedBy?: string;
+  tags?: string[];
+  isFavorite?: boolean;
+}
+
+interface Query {
+  id: number;
+  name: string;
+  sql: string;
+  description: string;
+  result: string;
+  resultImage?: string;
+  date: string;
+  timestamp: string;
+  lastEdited?: string;
+  versions?: QueryVersion[];
+  currentVersion: number;
+  tags?: string[];
+  isFavorite: boolean;
+}
+
+interface Tag {
+  id: string;
+  name: string;
+  color: string;
+  description?: string;
+  createdAt: string;
+  usageCount: number;
+}
+
+interface Category {
+  id: string;
+  name: string;
+  description?: string;
+  color: string;
+  icon?: string;
+  createdAt: string;
+  queryCount: number;
+}
+
 export interface ExportData {
-  queries: any[];
-  tags: any[];
-  categories: any[];
+  queries: Query[];
+  tags: Tag[];
+  categories: Category[];
   exportedAt: string;
   version: string;
   metadata: {
@@ -14,9 +63,9 @@ export interface ExportData {
 }
 
 export class ExportImportManager {
-  static exportToJSON(queries: any[], includeMetadata: boolean = true): string {
-    const tags = JSON.parse(localStorage.getItem('sqlQueryTags') || '[]');
-    const categories = JSON.parse(localStorage.getItem('sqlQueryCategories') || '[]');
+  static exportToJSON(queries: Query[]): string {
+    const tags = JSON.parse(localStorage.getItem('sqlQueryTags') || '[]') as Tag[];
+    const categories = JSON.parse(localStorage.getItem('sqlQueryCategories') || '[]') as Category[];
     
     const exportData: ExportData = {
       queries,
@@ -35,7 +84,7 @@ export class ExportImportManager {
     return JSON.stringify(exportData, null, 2);
   }
 
-  static exportToSQL(queries: any[]): string {
+  static exportToSQL(queries: Query[]): string {
     let sqlContent = `-- SQL Query Manager Export\n-- Generated on: ${new Date().toISOString()}\n-- Total queries: ${queries.length}\n\n`;
     
     queries.forEach((query, index) => {
@@ -46,9 +95,9 @@ export class ExportImportManager {
         sqlContent += `-- Description: ${query.description}\n`;
       }
       if (query.tags && query.tags.length > 0) {
-        const tags = JSON.parse(localStorage.getItem('sqlQueryTags') || '[]');
+        const tags = JSON.parse(localStorage.getItem('sqlQueryTags') || '[]') as Tag[];
         const tagNames = query.tags.map((tagId: string) => {
-          const tag = tags.find((t: any) => t.id === tagId);
+          const tag = tags.find((t: Tag) => t.id === tagId);
           return tag ? tag.name : tagId;
         }).join(', ');
         sqlContent += `-- Tags: ${tagNames}\n`;
@@ -77,10 +126,10 @@ export class ExportImportManager {
   }
 
   static async importFromJSON(file: File): Promise<{
-    queries: any[];
-    tags: any[];
-    categories: any[];
-    metadata?: any;
+    queries: Query[];
+    tags: Tag[];
+    categories: Category[];
+    metadata?: ExportData['metadata'];
   }> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -88,7 +137,7 @@ export class ExportImportManager {
       reader.onload = (event) => {
         try {
           const content = event.target?.result as string;
-          const data = JSON.parse(content);
+          const data = JSON.parse(content) as ExportData;
           
           // Validate import data structure
           if (!data.queries || !Array.isArray(data.queries)) {
@@ -102,7 +151,7 @@ export class ExportImportManager {
             metadata: data.metadata
           });
         } catch (error) {
-          reject(new Error(`Failed to parse JSON file: ${error}`));
+          reject(new Error(`Failed to parse JSON file: ${error instanceof Error ? error.message : 'Unknown error'}`));
         }
       };
 
@@ -114,7 +163,7 @@ export class ExportImportManager {
     });
   }
 
-  static async importFromSQL(file: File): Promise<{ queries: any[] }> {
+  static async importFromSQL(file: File): Promise<{ queries: Query[] }> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       
@@ -124,7 +173,7 @@ export class ExportImportManager {
           const queries = this.parseSQLFile(content);
           resolve({ queries });
         } catch (error) {
-          reject(new Error(`Failed to parse SQL file: ${error}`));
+          reject(new Error(`Failed to parse SQL file: ${error instanceof Error ? error.message : 'Unknown error'}`));
         }
       };
 
@@ -136,10 +185,10 @@ export class ExportImportManager {
     });
   }
 
-  private static parseSQLFile(content: string): any[] {
-    const queries: any[] = [];
+  private static parseSQLFile(content: string): Query[] {
+    const queries: Query[] = [];
     const lines = content.split('\n');
-    let currentQuery: any = null;
+    let currentQuery: Partial<Query> | null = null;
     let sqlLines: string[] = [];
     let inComment = false;
     let inResult = false;
@@ -167,7 +216,7 @@ export class ExportImportManager {
       }
 
       if (inComment && inResult && currentQuery) {
-        currentQuery.result += line + '\n';
+        currentQuery.result = (currentQuery.result || '') + line + '\n';
         continue;
       }
 
@@ -176,7 +225,7 @@ export class ExportImportManager {
         // Save previous query if exists
         if (currentQuery && sqlLines.length > 0) {
           currentQuery.sql = sqlLines.join('\n').trim();
-          queries.push(currentQuery);
+          queries.push(currentQuery as Query);
         }
 
         // Start new query
@@ -190,6 +239,7 @@ export class ExportImportManager {
           timestamp: new Date().toLocaleString(),
           currentVersion: 1,
           tags: [],
+          isFavorite: false,
           versions: []
         };
         sqlLines = [];
@@ -205,7 +255,7 @@ export class ExportImportManager {
       if (line.startsWith('-- Tags:') && currentQuery) {
         const tagNames = line.replace('-- Tags:', '').trim().split(',').map(t => t.trim());
         // For now, just store tag names - they'll need to be matched with actual tag IDs later
-        currentQuery.tagNames = tagNames;
+        (currentQuery as Query & { tagNames?: string[] }).tagNames = tagNames;
         continue;
       }
 
@@ -223,7 +273,7 @@ export class ExportImportManager {
     // Don't forget the last query
     if (currentQuery && sqlLines.length > 0) {
       currentQuery.sql = sqlLines.join('\n').trim();
-      queries.push(currentQuery);
+      queries.push(currentQuery as Query);
     }
 
     return queries;

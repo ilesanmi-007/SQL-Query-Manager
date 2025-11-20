@@ -1,43 +1,22 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { 
-  MagnifyingGlassIcon, 
-  SunIcon, 
-  MoonIcon,
-  Squares2X2Icon,
-  ListBulletIcon,
-  SwatchIcon,
-  TrashIcon
-} from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, SunIcon, MoonIcon, Squares2X2Icon, ListBulletIcon, SwatchIcon } from '@heroicons/react/24/outline';
 import { Query } from '../../types';
-import { storage } from '../../lib/storage';
-import VisibilityToggle from '../../components/VisibilityToggle';
 
 type ColorTheme = 'default' | 'ocean' | 'forest' | 'sunset' | 'purple' | 'rose' | 'amber' | 'teal' | 'indigo' | 'pink';
 type ViewMode = 'grid' | 'list';
 
-export default function SavedQueries() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
+export default function PublicQueries() {
   const [queries, setQueries] = useState<Query[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [colorTheme, setColorTheme] = useState<ColorTheme>('ocean');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
   useEffect(() => {
-    if (status === 'loading') return;
-    
-    if (!session) {
-      router.push('/auth/signin');
-      return;
-    }
-
     // Sync theme state with DOM and localStorage
     const savedTheme = localStorage.getItem('theme');
     const savedColorTheme = localStorage.getItem('colorTheme') as ColorTheme;
@@ -72,7 +51,7 @@ export default function SavedQueries() {
       localStorage.setItem('viewMode', 'grid');
     }
     
-    loadUserQueries();
+    loadPublicQueries();
 
     // Listen for theme changes from other tabs
     const handleStorageChange = (e: StorageEvent) => {
@@ -92,13 +71,14 @@ export default function SavedQueries() {
 
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
-  }, [session, status, router]);
+  }, []);
 
   const toggleTheme = () => {
     const newTheme = !isDarkMode;
     setIsDarkMode(newTheme);
     localStorage.setItem('theme', newTheme ? 'dark' : 'light');
     
+    // Force DOM update
     if (newTheme) {
       document.documentElement.classList.add('dark');
     } else {
@@ -119,41 +99,85 @@ export default function SavedQueries() {
 
   const getThemeColors = () => {
     const themes = {
-      default: { primary: 'bg-blue-600 hover:bg-blue-700', bg: 'bg-blue-50 dark:bg-gray-900' },
-      ocean: { primary: 'bg-cyan-600 hover:bg-cyan-700', bg: 'bg-cyan-50 dark:bg-gray-900' },
-      forest: { primary: 'bg-emerald-600 hover:bg-emerald-700', bg: 'bg-emerald-50 dark:bg-gray-900' },
-      sunset: { primary: 'bg-orange-600 hover:bg-orange-700', bg: 'bg-orange-50 dark:bg-gray-900' },
-      purple: { primary: 'bg-purple-600 hover:bg-purple-700', bg: 'bg-purple-50 dark:bg-gray-900' },
-      rose: { primary: 'bg-rose-600 hover:bg-rose-700', bg: 'bg-rose-50 dark:bg-gray-900' },
-      amber: { primary: 'bg-amber-600 hover:bg-amber-700', bg: 'bg-amber-50 dark:bg-gray-900' },
-      teal: { primary: 'bg-teal-600 hover:bg-teal-700', bg: 'bg-teal-50 dark:bg-gray-900' },
-      indigo: { primary: 'bg-indigo-600 hover:bg-indigo-700', bg: 'bg-indigo-50 dark:bg-gray-900' },
-      pink: { primary: 'bg-pink-600 hover:bg-pink-700', bg: 'bg-pink-50 dark:bg-gray-900' }
+      default: {
+        primary: 'bg-blue-600 hover:bg-blue-700',
+        accent: 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200',
+        bg: 'bg-blue-50 dark:bg-gray-900',
+        card: 'bg-white dark:bg-gray-800 border-blue-200 dark:border-gray-700'
+      },
+      ocean: {
+        primary: 'bg-cyan-600 hover:bg-cyan-700',
+        accent: 'bg-cyan-100 dark:bg-cyan-900 text-cyan-800 dark:text-cyan-200',
+        bg: 'bg-cyan-50 dark:bg-gray-900',
+        card: 'bg-white dark:bg-gray-800 border-cyan-200 dark:border-gray-700'
+      },
+      forest: {
+        primary: 'bg-emerald-600 hover:bg-emerald-700',
+        accent: 'bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200',
+        bg: 'bg-emerald-50 dark:bg-gray-900',
+        card: 'bg-white dark:bg-gray-800 border-emerald-200 dark:border-gray-700'
+      },
+      sunset: {
+        primary: 'bg-orange-600 hover:bg-orange-700',
+        accent: 'bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200',
+        bg: 'bg-orange-50 dark:bg-gray-900',
+        card: 'bg-white dark:bg-gray-800 border-orange-200 dark:border-gray-700'
+      },
+      purple: {
+        primary: 'bg-purple-600 hover:bg-purple-700',
+        accent: 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200',
+        bg: 'bg-purple-50 dark:bg-gray-900',
+        card: 'bg-white dark:bg-gray-800 border-purple-200 dark:border-gray-700'
+      },
+      rose: {
+        primary: 'bg-rose-600 hover:bg-rose-700',
+        accent: 'bg-rose-100 dark:bg-rose-900 text-rose-800 dark:text-rose-200',
+        bg: 'bg-rose-50 dark:bg-gray-900',
+        card: 'bg-white dark:bg-gray-800 border-rose-200 dark:border-gray-700'
+      },
+      amber: {
+        primary: 'bg-amber-600 hover:bg-amber-700',
+        accent: 'bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200',
+        bg: 'bg-amber-50 dark:bg-gray-900',
+        card: 'bg-white dark:bg-gray-800 border-amber-200 dark:border-gray-700'
+      },
+      teal: {
+        primary: 'bg-teal-600 hover:bg-teal-700',
+        accent: 'bg-teal-100 dark:bg-teal-900 text-teal-800 dark:text-teal-200',
+        bg: 'bg-teal-50 dark:bg-gray-900',
+        card: 'bg-white dark:bg-gray-800 border-teal-200 dark:border-gray-700'
+      },
+      indigo: {
+        primary: 'bg-indigo-600 hover:bg-indigo-700',
+        accent: 'bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200',
+        bg: 'bg-indigo-50 dark:bg-gray-900',
+        card: 'bg-white dark:bg-gray-800 border-indigo-200 dark:border-gray-700'
+      },
+      pink: {
+        primary: 'bg-pink-600 hover:bg-pink-700',
+        accent: 'bg-pink-100 dark:bg-pink-900 text-pink-800 dark:text-pink-200',
+        bg: 'bg-pink-50 dark:bg-gray-900',
+        card: 'bg-white dark:bg-gray-800 border-pink-200 dark:border-gray-700'
+      }
     };
     return themes[colorTheme];
   };
 
-  const loadUserQueries = async () => {
-    if (!session?.user) return;
-    
+  const loadPublicQueries = async () => {
     try {
-      const userQueries = await storage.listUserQueries((session.user as any).id);
-      setQueries(userQueries);
+      const response = await fetch('/api/queries/public');
+      if (response.ok) {
+        const publicQueries = await response.json();
+        setQueries(publicQueries);
+      } else {
+        console.error('Failed to load public queries:', response.status);
+        setQueries([]);
+      }
     } catch (error) {
-      console.error('Failed to load queries:', error);
+      console.error('Failed to load public queries:', error);
+      setQueries([]);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const deleteQuery = async (queryId: number) => {
-    if (!confirm('Are you sure you want to delete this query?')) return;
-    
-    try {
-      await storage.deleteQuery(queryId, (session.user as any)?.id);
-      setQueries(queries.filter(q => q.id !== queryId));
-    } catch (error) {
-      console.error('Failed to delete query:', error);
     }
   };
 
@@ -168,7 +192,7 @@ export default function SavedQueries() {
   if (loading) {
     return (
       <div className={`min-h-screen flex items-center justify-center ${themeColors.bg}`}>
-        <div className="text-lg text-gray-600 dark:text-gray-400">Loading saved queries...</div>
+        <div className="text-lg text-gray-600 dark:text-gray-400">Loading public queries...</div>
       </div>
     );
   }
@@ -183,17 +207,12 @@ export default function SavedQueries() {
               <Link href="/" className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 rounded-md font-medium transition-colors">
                 New Query
               </Link>
-              <span className={`px-4 py-2 text-white rounded-md font-medium ${themeColors.primary}`}>
+              <Link href="/saved" className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 rounded-md font-medium transition-colors">
                 Saved Queries
-              </span>
-              <Link href="/public" className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 rounded-md font-medium transition-colors">
-                Public Queries
               </Link>
-              {(session.user as any)?.isAdmin && (
-                <Link href="/admin" className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 rounded-md font-medium transition-colors">
-                  Admin
-                </Link>
-              )}
+              <span className={`px-4 py-2 text-white rounded-md font-medium ${themeColors.primary}`}>
+                Public Queries
+              </span>
             </div>
             
             <div className="flex items-center gap-2">
@@ -217,7 +236,7 @@ export default function SavedQueries() {
                 </button>
                 <div className="absolute right-0 top-full mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 min-w-[200px]">
                   <div className="grid grid-cols-5 gap-3">
-                    {(['default', 'ocean', 'forest', 'sunset', 'purple', 'rose', 'amber', 'teal', 'indigo', 'pink'] as const).map((theme) => (
+                    {(['default', 'ocean', 'forest', 'sunset', 'purple', 'rose', 'amber', 'teal', 'indigo', 'pink'] as ColorTheme[]).map((theme) => (
                       <button
                         key={theme}
                         onClick={() => changeColorTheme(theme)}
@@ -258,10 +277,10 @@ export default function SavedQueries() {
 
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Saved Queries
+            Public SQL Queries
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            {queries.length} queries in your collection
+            Discover and explore queries shared by the community
           </p>
         </div>
 
@@ -278,17 +297,17 @@ export default function SavedQueries() {
             />
           </div>
         </div>
-
+        
         {filteredQueries.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-500 dark:text-gray-400">
-              {searchTerm ? 'No queries match your search.' : 'No saved queries yet.'}
+              {searchTerm ? 'No queries match your search.' : 'No public queries available yet.'}
             </p>
           </div>
         ) : (
           <div className={viewMode === 'grid' ? 'grid gap-6 md:grid-cols-2 lg:grid-cols-3' : 'space-y-4'}>
             {filteredQueries.map((query) => (
-              <div key={query.id} className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow ${
+              <div key={query.id} className={`${themeColors.card} rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow ${
                 viewMode === 'list' ? 'flex items-start gap-6' : ''
               }`}>
                 <div className={viewMode === 'list' ? 'flex-1' : ''}>
@@ -296,20 +315,9 @@ export default function SavedQueries() {
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
                       {query.name}
                     </h3>
-                    <div className="flex items-center gap-2 ml-2">
-                      {query.isFavorite && (
-                        <span className="text-yellow-500">⭐</span>
-                      )}
-                      <VisibilityToggle 
-                        query={query}
-                        currentUserId={(session.user as any)?.id}
-                        onVisibilityChange={(queryId, newVisibility) => {
-                          setQueries(queries.map(q => 
-                            q.id === queryId ? {...q, visibility: newVisibility} : q
-                          ));
-                        }}
-                      />
-                    </div>
+                    <span className={`px-2 py-1 rounded text-xs font-medium ml-2 ${themeColors.accent}`}>
+                      Public
+                    </span>
                   </div>
                   
                   {query.description && (
@@ -331,38 +339,13 @@ export default function SavedQueries() {
                       }
                     </code>
                   </div>
-
-                  {/* Result Display */}
-                  {query.result && (
-                    <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 mb-4">
-                      <h4 className="text-sm font-semibold text-green-700 dark:text-green-300 mb-2">Result:</h4>
-                      <div className="bg-white dark:bg-gray-800 rounded p-3 max-h-48 overflow-y-auto">
-                        <pre className="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap font-mono">
-                          {query.result}
-                        </pre>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Result Image */}
-                  {query.resultImage && (
-                    <div className="mb-4">
-                      <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Screenshot:</h4>
-                      <img
-                        src={query.resultImage}
-                        alt="Query result"
-                        className="w-full max-h-64 object-contain rounded-lg border border-gray-200 dark:border-gray-600 cursor-pointer hover:opacity-90 transition-opacity"
-                        onClick={() => window.open(query.resultImage, '_blank')}
-                      />
-                    </div>
-                  )}
                   
                   {query.tags && query.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1 mb-3">
                       {query.tags.slice(0, viewMode === 'list' ? 2 : 3).map((tag, index) => (
                         <span
                           key={index}
-                          className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200"
+                          className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${themeColors.accent}`}
                         >
                           {tag}
                         </span>
@@ -377,13 +360,9 @@ export default function SavedQueries() {
                   
                   <div className="flex justify-between items-center text-sm text-gray-500 dark:text-gray-400">
                     <span>{query.date}</span>
-                    <button
-                      onClick={() => deleteQuery(query.id)}
-                      className="text-red-600 hover:text-red-800 text-sm flex items-center gap-1"
-                    >
-                      <TrashIcon className="w-4 h-4" />
-                      Delete
-                    </button>
+                    {query.isFavorite && (
+                      <span className="text-yellow-500">⭐</span>
+                    )}
                   </div>
                 </div>
               </div>

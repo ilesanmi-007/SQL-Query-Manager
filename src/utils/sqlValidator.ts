@@ -200,7 +200,7 @@ export class SQLValidator {
 
   static formatSQL(sql: string): string {
     // Basic SQL formatting
-    let formatted = sql
+    const formatted = sql
       .replace(/\s+/g, ' ')
       .replace(/,/g, ',\n  ')
       .replace(/\bSELECT\b/gi, 'SELECT')
