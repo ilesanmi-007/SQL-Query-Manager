@@ -220,6 +220,16 @@ SQL Query Manager is a comprehensive Next.js application that provides developer
 - **Local Storage**: Client-side storage for offline usage
 - **Flexible Backend**: Adaptable storage layer supporting multiple backends
 
+### ☁️ Supabase Cloud Storage
+The application leverages **Supabase** as its primary cloud database solution, providing:
+- **PostgreSQL Database**: Robust, scalable relational database in the cloud
+- **Real-time Subscriptions**: Live updates when queries are shared or modified
+- **Row Level Security (RLS)**: Database-level access control for user data protection
+- **Authentication Integration**: Seamless user management with built-in auth
+- **Automatic Backups**: Enterprise-grade data protection and recovery
+- **Global CDN**: Fast data access from anywhere in the world
+- **RESTful APIs**: Auto-generated APIs for all database operations
+
 ## 🛠️ Technology Stack
 
 ### Frontend
