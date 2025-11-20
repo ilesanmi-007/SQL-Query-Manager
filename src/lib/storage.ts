@@ -5,7 +5,7 @@ class SupabaseAdapter implements StorageAdapter {
   private supabase;
 
   constructor() {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
     this.supabase = createClient(supabaseUrl, supabaseKey);
   }
