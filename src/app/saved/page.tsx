@@ -150,7 +150,7 @@ export default function SavedQueries() {
     if (!confirm('Are you sure you want to delete this query?')) return;
     
     try {
-      await storage.deleteQuery(queryId, (session.user as any)?.id);
+      await storage.deleteQuery(queryId, (session?.user as any)?.id);
       setQueries(queries.filter(q => q.id !== queryId));
     } catch (error) {
       console.error('Failed to delete query:', error);
@@ -189,7 +189,7 @@ export default function SavedQueries() {
               <Link href="/public" className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 rounded-md font-medium transition-colors">
                 Public Queries
               </Link>
-              {(session.user as any)?.isAdmin && (
+              {(session?.user as any)?.isAdmin && (
                 <Link href="/admin" className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 rounded-md font-medium transition-colors">
                   Admin
                 </Link>
@@ -302,7 +302,7 @@ export default function SavedQueries() {
                       )}
                       <VisibilityToggle 
                         query={query}
-                        currentUserId={(session.user as any)?.id}
+                        currentUserId={(session?.user as any)?.id}
                         onVisibilityChange={(queryId, newVisibility) => {
                           setQueries(queries.map(q => 
                             q.id === queryId ? {...q, visibility: newVisibility} : q
