@@ -174,3 +174,4 @@ For support and questions:
 ---
 
 **Built with ❤️ using Next.js and modern web technologies**
+# SQL-Query-Manager
