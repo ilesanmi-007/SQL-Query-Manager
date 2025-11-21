@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { PhotoIcon, SunIcon, MoonIcon, XMarkIcon, StarIcon, CheckCircleIcon, EyeIcon, EyeSlashIcon, SwatchIcon } from '@heroicons/react/24/outline';
+import { PhotoIcon, XMarkIcon, StarIcon, CheckCircleIcon, EyeIcon, EyeSlashIcon, SwatchIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { TagManager } from '../utils/tagManager';
 import { storage } from '../lib/storage';
@@ -21,7 +21,6 @@ export default function Home() {
   const [result, setResult] = useState('');
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(true); // Default to dark mode
   const [colorTheme, setColorTheme] = useState<ColorTheme>('ocean');
   
   // New state for enhanced features
@@ -88,23 +87,6 @@ export default function Home() {
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [session, status, router]);
-
-  const toggleTheme = () => {
-    const newTheme = !isDarkMode;
-    console.log('Toggling theme:', { current: isDarkMode, new: newTheme, willBe: newTheme ? 'dark' : 'light' });
-    
-    setIsDarkMode(newTheme);
-    localStorage.setItem('theme', newTheme ? 'dark' : 'light');
-    
-    // Force DOM update
-    if (newTheme) {
-      document.documentElement.classList.add('dark');
-      console.log('Added dark class');
-    } else {
-      document.documentElement.classList.remove('dark');
-      console.log('Removed dark class');
-    }
-  };
 
   const changeColorTheme = (theme: ColorTheme) => {
     setColorTheme(theme);
@@ -387,16 +369,6 @@ export default function Home() {
                 </div>
               </div>
               
-              <button
-                onClick={toggleTheme}
-                className="p-2 rounded-lg bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-shadow"
-              >
-                {isDarkMode ? (
-                  <SunIcon className="w-5 h-5 text-yellow-500" />
-                ) : (
-                  <MoonIcon className="w-5 h-5 text-gray-600" />
-                )}
-              </button>
               <button
                 onClick={() => signOut()}
                 className="px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"

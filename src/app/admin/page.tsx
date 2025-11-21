@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { SwatchIcon, SunIcon, MoonIcon } from '@heroicons/react/24/outline';
+import { SwatchIcon } from '@heroicons/react/24/outline';
 import { storage } from '../../lib/storage';
 import { Query, User } from '../../types';
 
@@ -255,18 +255,6 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               </div>
-              
-              {/* Theme Toggle */}
-              <button
-                onClick={toggleTheme}
-                className="p-2 rounded-lg bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-shadow"
-              >
-                {isDarkMode ? (
-                  <SunIcon className="w-5 h-5 text-yellow-500" />
-                ) : (
-                  <MoonIcon className="w-5 h-5 text-gray-600" />
-                )}
-              </button>
             </div>
           </div>
         </nav>
