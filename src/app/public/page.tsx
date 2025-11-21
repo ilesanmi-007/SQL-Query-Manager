@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { MagnifyingGlassIcon, SunIcon, MoonIcon, Squares2X2Icon, ListBulletIcon, SwatchIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, SunIcon, MoonIcon, Squares2X2Icon, ListBulletIcon, SwatchIcon, XMarkIcon, EyeIcon } from '@heroicons/react/24/outline';
 import { Query } from '../../types';
 
 type ColorTheme = 'default' | 'ocean' | 'forest' | 'sunset' | 'purple' | 'rose' | 'amber' | 'teal' | 'indigo' | 'pink';
@@ -15,6 +15,7 @@ export default function PublicQueries() {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [colorTheme, setColorTheme] = useState<ColorTheme>('ocean');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [selectedQuery, setSelectedQuery] = useState<Query | null>(null);
 
   useEffect(() => {
     // Sync theme state with DOM and localStorage
@@ -307,17 +308,24 @@ export default function PublicQueries() {
         ) : (
           <div className={viewMode === 'grid' ? 'grid gap-6 md:grid-cols-2 lg:grid-cols-3' : 'space-y-4'}>
             {filteredQueries.map((query) => (
-              <div key={query.id} className={`${themeColors.card} rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow ${
-                viewMode === 'list' ? 'flex items-start gap-6' : ''
-              }`}>
+              <div 
+                key={query.id} 
+                className={`${themeColors.card} rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow cursor-pointer ${
+                  viewMode === 'list' ? 'flex items-start gap-6' : ''
+                }`}
+                onClick={() => setSelectedQuery(query)}
+              >
                 <div className={viewMode === 'list' ? 'flex-1' : ''}>
                   <div className="flex justify-between items-start mb-3">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
                       {query.name}
                     </h3>
-                    <span className={`px-2 py-1 rounded text-xs font-medium ml-2 ${themeColors.accent}`}>
-                      Public
-                    </span>
+                    <div className="flex items-center gap-2 ml-2">
+                      <span className={`px-2 py-1 rounded text-xs font-medium ${themeColors.accent}`}>
+                        Public
+                      </span>
+                      <EyeIcon className="w-4 h-4 text-gray-400" />
+                    </div>
                   </div>
                   
                   {query.description && (
@@ -367,6 +375,91 @@ export default function PublicQueries() {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Query Detail Modal */}
+        {selectedQuery && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+              <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                    {selectedQuery.name}
+                  </h2>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className={`px-2 py-1 rounded text-xs font-medium ${themeColors.accent}`}>
+                      Public Query
+                    </span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      {selectedQuery.date}
+                    </span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setSelectedQuery(null)}
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                >
+                  <XMarkIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                </button>
+              </div>
+              
+              <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+                {selectedQuery.description && (
+                  <div className="mb-6">
+                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</h3>
+                    <p className="text-gray-600 dark:text-gray-400">{selectedQuery.description}</p>
+                  </div>
+                )}
+                
+                <div className="mb-6">
+                  <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">SQL Query</h3>
+                  <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 overflow-x-auto">
+                    <pre className="text-sm text-gray-800 dark:text-gray-200 font-mono whitespace-pre-wrap">
+                      {selectedQuery.sql}
+                    </pre>
+                  </div>
+                </div>
+                
+                {selectedQuery.result && (
+                  <div className="mb-6">
+                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Sample Result</h3>
+                    <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 overflow-x-auto">
+                      <pre className="text-sm text-gray-800 dark:text-gray-200 font-mono whitespace-pre-wrap">
+                        {selectedQuery.result}
+                      </pre>
+                    </div>
+                  </div>
+                )}
+
+                {selectedQuery.resultImage && (
+                  <div className="mb-6">
+                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Result Image</h3>
+                    <img 
+                      src={selectedQuery.resultImage} 
+                      alt="Query result" 
+                      className="max-w-full h-auto rounded-lg border border-gray-200 dark:border-gray-700"
+                    />
+                  </div>
+                )}
+                
+                {selectedQuery.tags && selectedQuery.tags.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tags</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedQuery.tags.map((tag, index) => (
+                        <span
+                          key={index}
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${themeColors.accent}`}
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         )}
       </div>
