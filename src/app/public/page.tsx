@@ -348,8 +348,19 @@ export default function PublicQueries() {
                     </code>
                   </div>
 
-                  {/* Result Preview */}
-                  {query.result && (
+                  {/* Result Image - Show directly in card */}
+                  {query.resultImage && (
+                    <div className="mb-4">
+                      <img 
+                        src={query.resultImage} 
+                        alt="Query result" 
+                        className="w-full h-48 object-cover rounded-lg border border-gray-200 dark:border-gray-700"
+                      />
+                    </div>
+                  )}
+
+                  {/* Text Result Preview */}
+                  {query.result && !query.resultImage && (
                     <div className="mb-4">
                       <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Sample Result:</h4>
                       <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3 border border-green-200 dark:border-green-800">
@@ -360,22 +371,6 @@ export default function PublicQueries() {
                           }
                         </pre>
                       </div>
-                    </div>
-                  )}
-
-                  {/* Result Image Preview */}
-                  {query.resultImage && (
-                    <div className="mb-4">
-                      <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Result Preview:</h4>
-                      <img 
-                        src={query.resultImage} 
-                        alt="Query result preview" 
-                        className="w-full h-32 object-cover rounded-lg border border-gray-200 dark:border-gray-700 cursor-pointer hover:opacity-80 transition-opacity"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedQuery(query);
-                        }}
-                      />
                     </div>
                   )}
                   
