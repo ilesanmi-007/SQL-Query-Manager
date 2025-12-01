@@ -211,10 +211,10 @@ export default function AdminDashboard() {
           <div className="flex justify-between items-center">
             <div className="bg-white dark:bg-gray-800 rounded-lg p-1 inline-flex gap-1 shadow-sm">
               <Link href="/" className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 rounded-md font-medium transition-colors">
-                New Query
+                Write Query
               </Link>
               <Link href="/saved" className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 rounded-md font-medium transition-colors">
-                Saved Queries
+                All Queries
               </Link>
               <Link href="/public" className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 rounded-md font-medium transition-colors">
                 Public Queries
@@ -269,7 +269,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
               Total Users
@@ -284,22 +284,19 @@ export default function AdminDashboard() {
           </div>
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Admin Users
+              Private Queries
             </h3>
             <p className="text-3xl font-bold text-purple-600">
-              {users.filter(u => u.isAdmin).length}
+              {queries.filter(q => q.visibility === 'private').length}
             </p>
           </div>
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border-2 border-green-200 dark:border-green-700">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              Quick Actions
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Public Queries
             </h3>
-            <Link 
-              href="/" 
-              className={`inline-block px-4 py-2 text-white rounded-lg transition-colors text-sm font-medium ${themeColors.primary}`}
-            >
-              + Create Query
-            </Link>
+            <p className="text-3xl font-bold text-cyan-600">
+              {queries.filter(q => q.visibility === 'public').length}
+            </p>
           </div>
         </div>
 
@@ -337,9 +334,18 @@ export default function AdminDashboard() {
                   <div key={query.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 dark:text-white">
-                          {query.name}
-                        </h3>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-semibold text-gray-900 dark:text-white">
+                            {query.name}
+                          </h3>
+                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                            query.visibility === 'public' 
+                              ? 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300' 
+                              : 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300'
+                          }`}>
+                            {query.visibility === 'public' ? '🌐 Public' : '🔒 Private'}
+                          </span>
+                        </div>
                         <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                           {query.description}
                         </p>
@@ -379,46 +385,65 @@ export default function AdminDashboard() {
 
             {activeTab === 'users' && (
               <div className="space-y-4">
-                {users.map((user) => (
-                  <div key={user.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <h3 className="font-semibold text-gray-900 dark:text-white">
-                          {user.name || 'Unnamed User'}
-                        </h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {user.email}
-                        </p>
-                        <div className="mt-1 text-xs text-gray-500">
-                          Joined: {new Date(user.createdAt).toLocaleDateString()}
-                          {user.lastLogin && ` | Last login: ${new Date(user.lastLogin).toLocaleDateString()}`}
+                {users.map((user) => {
+                  const userQueries = queries.filter(q => q.userId === user.id);
+                  const publicQueries = userQueries.filter(q => q.visibility === 'public');
+                  const privateQueries = userQueries.filter(q => q.visibility === 'private');
+                  
+                  return (
+                    <div key={user.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900 dark:text-white">
+                            {user.name || 'Unnamed User'}
+                          </h3>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {user.email}
+                          </p>
+                          <div className="mt-2 text-xs text-gray-500">
+                            Joined: {new Date(user.createdAt).toLocaleDateString()}
+                            {user.lastLogin && ` | Last login: ${new Date(user.lastLogin).toLocaleDateString()}`}
+                          </div>
+                          
+                          {/* Query Statistics */}
+                          <div className="mt-3 flex gap-4">
+                            <div className="bg-gray-50 dark:bg-gray-900 px-3 py-2 rounded">
+                              <span className="text-xs text-gray-500 dark:text-gray-400">Total Queries</span>
+                              <p className="text-lg font-bold text-gray-900 dark:text-white">{userQueries.length}</p>
+                            </div>
+                            <div className="bg-cyan-50 dark:bg-cyan-900/20 px-3 py-2 rounded">
+                              <span className="text-xs text-cyan-600 dark:text-cyan-400">Public</span>
+                              <p className="text-lg font-bold text-cyan-700 dark:text-cyan-300">{publicQueries.length}</p>
+                            </div>
+                            <div className="bg-purple-50 dark:bg-purple-900/20 px-3 py-2 rounded">
+                              <span className="text-xs text-purple-600 dark:text-purple-400">Private</span>
+                              <p className="text-lg font-bold text-purple-700 dark:text-purple-300">{privateQueries.length}</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          {user.isAdmin && (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                              Admin
+                            </span>
+                          )}
+                          <button
+                            onClick={() => toggleAdmin(user.id)}
+                            className="text-blue-600 hover:text-blue-800 text-sm"
+                          >
+                            {user.isAdmin ? 'Remove Admin' : 'Make Admin'}
+                          </button>
+                          <button
+                            onClick={() => deleteUser(user.id)}
+                            className="text-red-600 hover:text-red-800 text-sm"
+                          >
+                            Delete
+                          </button>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        {user.isAdmin && (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                            Admin
-                          </span>
-                        )}
-                        <span className="text-sm text-gray-500">
-                          {queries.filter(q => q.userId === user.id).length} queries
-                        </span>
-                        <button
-                          onClick={() => toggleAdmin(user.id)}
-                          className="text-blue-600 hover:text-blue-800 text-sm"
-                        >
-                          {user.isAdmin ? 'Remove Admin' : 'Make Admin'}
-                        </button>
-                        <button
-                          onClick={() => deleteUser(user.id)}
-                          className="text-red-600 hover:text-red-800 text-sm"
-                        >
-                          Delete
-                        </button>
-                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
                 {users.length === 0 && (
                   <div className="text-center py-8 text-gray-500">
                     No users found

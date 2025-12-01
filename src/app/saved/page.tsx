@@ -24,6 +24,7 @@ export default function SavedQueries() {
   const [queries, setQueries] = useState<Query[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [dateFilter, setDateFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'draft' | 'published'>('all');
   const [loading, setLoading] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [colorTheme, setColorTheme] = useState<ColorTheme>('ocean');
@@ -163,7 +164,11 @@ export default function SavedQueries() {
     
     const matchesDate = !dateFilter || query.date === dateFilter;
     
-    return matchesSearch && matchesDate;
+    const matchesStatus = statusFilter === 'all' || 
+      (statusFilter === 'draft' && query.status === 'draft') ||
+      (statusFilter === 'published' && (query.status === 'published' || !query.status));
+    
+    return matchesSearch && matchesDate && matchesStatus;
   });
 
   const themeColors = getThemeColors();
@@ -184,10 +189,10 @@ export default function SavedQueries() {
           <div className="flex justify-between items-center">
             <div className="bg-white dark:bg-gray-800 rounded-lg p-1 inline-flex gap-1 shadow-sm">
               <Link href="/" className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 rounded-md font-medium transition-colors">
-                New Query
+                Write Query
               </Link>
               <span className={`px-4 py-2 text-white rounded-md font-medium ${themeColors.primary}`}>
-                Saved Queries
+                All Queries
               </span>
               <Link href="/public" className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 rounded-md font-medium transition-colors">
                 Public Queries
@@ -249,16 +254,16 @@ export default function SavedQueries() {
 
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Saved Queries
+            All Queries
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            {queries.length} queries in your collection
+            {queries.length} queries in your collection (both private and public)
           </p>
         </div>
 
         {/* Search and Filters */}
         <div className="mb-6">
-          <div className="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto">
+          <div className="flex flex-col sm:flex-row gap-4 max-w-3xl mx-auto">
             {/* Search Input */}
             <div className="relative flex-1">
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -269,6 +274,19 @@ export default function SavedQueries() {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors text-gray-900 dark:text-gray-100"
               />
+            </div>
+            
+            {/* Status Filter */}
+            <div className="relative">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value as 'all' | 'draft' | 'published')}
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors text-gray-900 dark:text-gray-100"
+              >
+                <option value="all">All Status</option>
+                <option value="draft">📝 Drafts</option>
+                <option value="published">✓ Published</option>
+              </select>
             </div>
             
             {/* Date Filter */}
@@ -283,11 +301,12 @@ export default function SavedQueries() {
             </div>
             
             {/* Clear Filters */}
-            {(searchTerm || dateFilter) && (
+            {(searchTerm || dateFilter || statusFilter !== 'all') && (
               <button
                 onClick={() => {
                   setSearchTerm('');
                   setDateFilter('');
+                  setStatusFilter('all');
                 }}
                 className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-lg transition-colors"
               >
@@ -311,9 +330,16 @@ export default function SavedQueries() {
               }`}>
                 <div className={viewMode === 'list' ? 'flex-1' : ''}>
                   <div className="flex justify-between items-start mb-3">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
-                      {query.name}
-                    </h3>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
+                        {query.name}
+                      </h3>
+                      {query.status === 'draft' && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 mt-1">
+                          📝 Draft
+                        </span>
+                      )}
+                    </div>
                     <div className="flex items-center gap-2 ml-2">
                       {query.isFavorite && (
                         <span className="text-yellow-500">⭐</span>

@@ -171,10 +171,10 @@ export default function PublicQueries() {
           <div className="flex justify-between items-center">
             <div className="bg-white dark:bg-gray-800 rounded-lg p-1 inline-flex gap-1 shadow-sm">
               <Link href="/" className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 rounded-md font-medium transition-colors">
-                New Query
+                Write Query
               </Link>
               <Link href="/saved" className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 rounded-md font-medium transition-colors">
-                Saved Queries
+                All Queries
               </Link>
               <span className={`px-4 py-2 text-white rounded-md font-medium ${themeColors.primary}`}>
                 Public Queries

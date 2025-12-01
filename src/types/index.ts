@@ -27,6 +27,7 @@ export interface Query {
   isFavorite: boolean;
   userId: string; // New: Associate queries with users
   visibility: 'public' | 'private'; // New: Query visibility
+  status?: 'draft' | 'published'; // New: Query status
 }
 
 export interface Tag {

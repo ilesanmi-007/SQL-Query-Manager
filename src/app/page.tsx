@@ -27,9 +27,40 @@ export default function Home() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [isFavorite, setIsFavorite] = useState(false);
   const [visibility, setVisibility] = useState<'private' | 'public'>('private');
+  const [status, setStatus] = useState<'draft' | 'published'>('published');
   const [availableTags, setAvailableTags] = useState<Tag[]>([]);
   const [newTagName, setNewTagName] = useState('');
   const [showNewTagInput, setShowNewTagInput] = useState(false);
+  
+  // Notification state
+  const [notification, setNotification] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
+  
+  // Notification state
+  const [notification, setNotification] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
+  
+  // Notification state
+  const [notification, setNotification] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
+  
+  // Notification state
+  const [notification, setNotification] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
+  
+  // Notification state
+  const [notification, setNotification] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
 
   useEffect(() => {
     if (status === 'loading') return;
@@ -252,6 +283,7 @@ export default function Home() {
       isFavorite,
       userId,
       visibility: visibility,
+      status: status,
       versions: [{
         version: 1,
         name: name || `Query ${Date.now()}`,
@@ -289,6 +321,7 @@ export default function Home() {
       setSelectedTags([]);
       setIsFavorite(false);
       setVisibility('private');
+      setStatus('published');
     } catch (error) {
       console.error('Failed to save query:', error);
       alert(`Failed to save query: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -318,10 +351,10 @@ export default function Home() {
           <div className="flex justify-between items-center">
             <div className="bg-white dark:bg-gray-800 rounded-lg p-1 inline-flex gap-1 shadow-sm">
               <span className={`px-4 py-2 text-white rounded-md font-medium ${themeColors.primary}`}>
-                New Query
+                Write Query
               </span>
               <Link href="/saved" className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 rounded-md font-medium transition-colors">
-                Saved Queries
+                All Queries
               </Link>
               <Link href="/public" className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 rounded-md font-medium transition-colors">
                 Public Queries
@@ -420,7 +453,7 @@ export default function Home() {
               />
             </div>
 
-            {/* Tags, Favorite & Visibility */}
+            {/* Tags, Favorite, Visibility & Status */}
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
               {/* Tags */}
               <div className="lg:col-span-2 space-y-2">
@@ -547,6 +580,39 @@ export default function Home() {
                   <span className="text-sm text-gray-700 dark:text-gray-300">
                     {visibility === 'public' ? 'Public' : 'Private'}
                   </span>
+                </button>
+              </div>
+            </div>
+
+            {/* Status (Draft/Published) */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Status
+              </label>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setStatus('draft')}
+                  className={`flex-1 p-3 border rounded-lg transition-colors ${
+                    status === 'draft'
+                      ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300'
+                      : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  <span className="text-sm font-medium">📝 Draft</span>
+                  <p className="text-xs mt-1 opacity-75">Save as work in progress</p>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setStatus('published')}
+                  className={`flex-1 p-3 border rounded-lg transition-colors ${
+                    status === 'published'
+                      ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300'
+                      : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  <span className="text-sm font-medium">✓ Published</span>
+                  <p className="text-xs mt-1 opacity-75">Ready to use</p>
                 </button>
               </div>
             </div>

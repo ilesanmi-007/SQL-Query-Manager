@@ -26,6 +26,7 @@ CREATE TABLE queries (
   is_favorite BOOLEAN DEFAULT FALSE,
   user_id UUID REFERENCES users(id) ON DELETE CASCADE,
   visibility VARCHAR(10) DEFAULT 'private' CHECK (visibility IN ('public', 'private')),
+  status VARCHAR(10) DEFAULT 'published' CHECK (status IN ('draft', 'published')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
