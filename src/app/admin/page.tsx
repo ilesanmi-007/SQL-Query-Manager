@@ -271,32 +271,108 @@ export default function AdminDashboard() {
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Total Users
+            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+              Registered Users
             </h3>
-            <p className="text-3xl font-bold text-blue-600">{users.length}</p>
+            <p className="text-3xl font-bold text-blue-600 mt-2">{users.length}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Total accounts created</p>
           </div>
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+              Active Users
+            </h3>
+            <p className="text-3xl font-bold text-green-600 mt-2">
+              {new Set(queries.map(q => q.userId)).size}
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Users with saved queries</p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
               Total Queries
             </h3>
-            <p className="text-3xl font-bold text-green-600">{queries.length}</p>
-          </div>
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Private Queries
-            </h3>
-            <p className="text-3xl font-bold text-purple-600">
-              {queries.filter(q => q.visibility === 'private').length}
+            <p className="text-3xl font-bold text-purple-600 mt-2">{queries.length}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              {queries.filter(q => q.visibility === 'public').length} public, {queries.filter(q => q.visibility === 'private').length} private
             </p>
           </div>
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Public Queries
+            <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+              Avg Queries/User
             </h3>
-            <p className="text-3xl font-bold text-cyan-600">
-              {queries.filter(q => q.visibility === 'public').length}
+            <p className="text-3xl font-bold text-cyan-600 mt-2">
+              {new Set(queries.map(q => q.userId)).size > 0 
+                ? (queries.length / new Set(queries.map(q => q.userId)).size).toFixed(1)
+                : '0'}
             </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Per active user</p>
+          </div>
+        </div>
+
+        {/* Activity Insights */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Recent Activity */}
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Recent Queries
+            </h3>
+            <div className="space-y-3">
+              {queries
+                .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                .slice(0, 5)
+                .map((query) => (
+                  <div key={query.id} className="flex items-start gap-3 pb-3 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                        {query.name}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {new Date(query.createdAt).toLocaleDateString()} • {query.visibility}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              {queries.length === 0 && (
+                <p className="text-sm text-gray-500 dark:text-gray-400">No queries yet</p>
+              )}
+            </div>
+          </div>
+
+          {/* Most Active Users */}
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Most Active Users
+            </h3>
+            <div className="space-y-3">
+              {Object.entries(
+                queries.reduce((acc, query) => {
+                  acc[query.userId] = (acc[query.userId] || 0) + 1;
+                  return acc;
+                }, {} as Record<string, number>)
+              )
+                .sort(([, a], [, b]) => b - a)
+                .slice(0, 5)
+                .map(([userId, count]) => {
+                  const user = users.find(u => u.id === userId);
+                  return (
+                    <div key={userId} className="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                          {user?.name || user?.email || 'Unknown User'}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {user?.email}
+                        </p>
+                      </div>
+                      <span className="ml-2 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-sm font-semibold rounded-full">
+                        {count} {count === 1 ? 'query' : 'queries'}
+                      </span>
+                    </div>
+                  );
+                })}
+              {queries.length === 0 && (
+                <p className="text-sm text-gray-500 dark:text-gray-400">No activity yet</p>
+              )}
+            </div>
           </div>
         </div>
 
