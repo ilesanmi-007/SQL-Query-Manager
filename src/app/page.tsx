@@ -37,30 +37,6 @@ export default function Home() {
     type: 'success' | 'error';
     message: string;
   } | null>(null);
-  
-  // Notification state
-  const [notification, setNotification] = useState<{
-    type: 'success' | 'error';
-    message: string;
-  } | null>(null);
-  
-  // Notification state
-  const [notification, setNotification] = useState<{
-    type: 'success' | 'error';
-    message: string;
-  } | null>(null);
-  
-  // Notification state
-  const [notification, setNotification] = useState<{
-    type: 'success' | 'error';
-    message: string;
-  } | null>(null);
-  
-  // Notification state
-  const [notification, setNotification] = useState<{
-    type: 'success' | 'error';
-    message: string;
-  } | null>(null);
 
   useEffect(() => {
     if (status === 'loading') return;
