@@ -22,12 +22,13 @@ export default function Home() {
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [colorTheme, setColorTheme] = useState<ColorTheme>('ocean');
+  const [isDarkMode, setIsDarkMode] = useState(true);
   
   // New state for enhanced features
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [isFavorite, setIsFavorite] = useState(false);
   const [visibility, setVisibility] = useState<'private' | 'public'>('private');
-  const [status, setStatus] = useState<'draft' | 'published'>('published');
+  const [queryStatus, setQueryStatus] = useState<'draft' | 'published'>('published');
   const [availableTags, setAvailableTags] = useState<Tag[]>([]);
   const [newTagName, setNewTagName] = useState('');
   const [showNewTagInput, setShowNewTagInput] = useState(false);
@@ -297,7 +298,7 @@ export default function Home() {
       setSelectedTags([]);
       setIsFavorite(false);
       setVisibility('private');
-      setStatus('published');
+      setQueryStatus('published');
     } catch (error) {
       console.error('Failed to save query:', error);
       alert(`Failed to save query: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -568,9 +569,9 @@ export default function Home() {
               <div className="flex gap-2">
                 <button
                   type="button"
-                  onClick={() => setStatus('draft')}
+                  onClick={() => setQueryStatus('draft')}
                   className={`flex-1 p-3 border rounded-lg transition-colors ${
-                    status === 'draft'
+                    queryStatus === 'draft'
                       ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300'
                       : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
@@ -580,9 +581,9 @@ export default function Home() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setStatus('published')}
+                  onClick={() => setQueryStatus('published')}
                   className={`flex-1 p-3 border rounded-lg transition-colors ${
-                    status === 'published'
+                    queryStatus === 'published'
                       ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300'
                       : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
